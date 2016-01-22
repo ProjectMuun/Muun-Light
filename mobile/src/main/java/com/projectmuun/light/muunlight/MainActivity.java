@@ -20,9 +20,11 @@ import android.view.MenuItem;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import java.util.Calendar;
 import java.util.Random;
@@ -57,15 +59,28 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setTitle("Muun Light");
+        toolbar.inflateMenu(R.menu.menu_main);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                settingsDialog();
+                return false;
+            }
+        });
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                /*
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                        */
+                showTimePicker();
             }
         });
+
 
 
         alarmMgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
@@ -73,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         hoursTxT = (TextView)  findViewById(R.id.hours);
         minutesTxT = (TextView) findViewById(R.id.minutes);
         AmPmTxT = (TextView) findViewById(R.id.ampm);
-        settingsBtn = (ImageButton) findViewById(R.id.setting_btn);
+        //settingsBtn = (ImageButton) findViewById(R.id.setting_btn);
 
 
         hours = PreferenceManager.getDefaultSharedPreferences(this).getInt("Hour", Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
@@ -102,13 +117,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
+        /*
         settingsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 settingsDialog();
             }
         });
+        */
 
         activity = this;
 
@@ -141,7 +157,22 @@ public class MainActivity extends AppCompatActivity {
         dialog.setContentView(R.layout.settings_dialog);
         dialog.setTitle("Settings");
 
+        ((SeekBar) dialog.findViewById(R.id.margin_seek)).setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                ((TextView) dialog.findViewById(R.id.margin_seek_txt)).setText(""+progress);
+            }
 
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
         dialog.show();
     }
@@ -201,6 +232,7 @@ public class MainActivity extends AppCompatActivity {
         //    alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis()-EARLY_WAKE_MARGIN, interval, alarmIntent);
 
         System.out.println("Alarm set\n" + hours + ":" + minutes + "\nAlarm in " + ((calendar.getTimeInMillis() - System.currentTimeMillis()) / 1000 / 60) + " minutes");
+        Toast.makeText(MainActivity.this, "Alarm in " + ((calendar.getTimeInMillis() - System.currentTimeMillis()) / 1000 / 60 / 60) + " hours", Toast.LENGTH_SHORT).show();
     }
     public void disarmAlarm() {
         MonitoringSleep= false;

@@ -1,12 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SETTINGS"
-        android:layout_centerInParent="true"/>
+        android:text="How early are you willing to wake up?"
+        android:textColor="#000000"
+        android:textSize="20dp"
+        android:paddingBottom="5dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:id="@+id/wake_margin_txt"/>
+
+    <SeekBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/wake_margin_txt"
+        android:max="120"
+        android:progress="15"
+        android:id="@+id/margin_seek"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/margin_seek"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal"
+        >
+        <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="15"
+        android:textSize="20dp"
+        android:id="@+id/margin_seek_txt"
+        android:textColor="#535353"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" min"
+            android:textSize="20dp"
+            android:textColor="#676767"/>
+    </LinearLayout>
 
 </RelativeLayout>

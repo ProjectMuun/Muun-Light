@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton settingsBtn;
     static MainActivity activity;
     static boolean AlarmSetByUser = false;
+    static boolean TimePickerOn = false;
 
     static MainActivity instance() {
         if (activity ==null)
@@ -202,11 +203,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showTimePicker() {
-        if (!AlarmSetByUser) {
+        if (!AlarmSetByUser && !TimePickerOn) {
+            TimePickerOn = true;
             TimePickerDialog tp = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
                 @Override
                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                     updateAlarmTime(hourOfDay, minute);
+                    TimePickerOn = false;
                 }
             }, hours, minutes, false);
             tp.show();

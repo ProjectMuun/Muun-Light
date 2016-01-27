@@ -32,7 +32,7 @@ public class AlarmReciever extends WakefulBroadcastReceiver{
         System.out.println("Alarm Started");
 
 
-        if (MainActivity.MonitoringSleep) {
+        if (MainActivity.MonitoringSleep && MainActivity.AlarmSetByUser) {
             MainActivity.MonitoringSleep = false;
             audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
 

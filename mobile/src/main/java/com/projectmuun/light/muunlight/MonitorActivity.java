@@ -65,7 +65,7 @@ public class MonitorActivity extends Activity implements SensorEventListener{
                 if ((deltaX > NOISE || deltaY > NOISE || deltaZ > NOISE) && (timeDelta) > TIME_INTERVAL) {
                     System.out.println("Accelerometer (more)");
                     lastRecording = System.currentTimeMillis();
-                    if (timeDelta < REM_MAX) {
+                    if (timeDelta < REM_MAX && MainActivity.AlarmSetByUser) {
                         System.out.println("REM!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                         ring();
                     }

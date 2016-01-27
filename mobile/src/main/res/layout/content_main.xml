@@ -76,11 +76,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
-
                 android:id="@+id/hours"
                 android:textColor="#FFFFFF"
                 android:textSize="80dp"
-                android:textIsSelectable="true" />
+                android:textStyle="bold" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

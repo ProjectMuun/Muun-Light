@@ -7,6 +7,8 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -17,6 +19,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -44,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView AmPmTxT;
     private ImageButton settingsBtn;
     static MainActivity activity;
+    static boolean AlarmSetByUser = false;
 
     static MainActivity instance() {
         if (activity ==null)
@@ -57,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle("Muun Light");
@@ -128,6 +136,22 @@ public class MainActivity extends AppCompatActivity {
 
         activity = this;
 
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+        Window window = activity.getWindow();
+
+// clear FLAG_TRANSLUCENT_STATUS flag:
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+// add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+
+// finally change the color
+
+            window.setStatusBarColor(activity.getResources().getColor(R.color.colorPrimaryDark));
+        }
+
     }
 
     @Override
@@ -178,13 +202,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showTimePicker() {
-        TimePickerDialog tp = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                updateAlarmTime(hourOfDay, minute);
-            }
-        }, hours, minutes, false);
-        tp.show();
+        if (!AlarmSetByUser) {
+            TimePickerDialog tp = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
+                @Override
+                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                    updateAlarmTime(hourOfDay, minute);
+                }
+            }, hours, minutes, false);
+            tp.show();
+        }
     }
     private void updateAlarmTime(int hour, int minute) {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
@@ -202,6 +228,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void setAlarm() {
+
+        AlarmSetByUser = true;
+        setTimeEnabled(false);
 
         Intent intent = new Intent(this, AlarmReciever.class);
         Intent intent1 = new Intent(this, KickReciever.class);
@@ -233,12 +262,29 @@ public class MainActivity extends AppCompatActivity {
 
         System.out.println("Alarm set\n" + hours + ":" + minutes + "\nAlarm in " + ((calendar.getTimeInMillis() - System.currentTimeMillis()) / 1000 / 60) + " minutes");
         Toast.makeText(MainActivity.this, "Alarm in " + ((calendar.getTimeInMillis() - System.currentTimeMillis()) / 1000 / 60 / 60) + " hours", Toast.LENGTH_SHORT).show();
+        ((Switch)findViewById(R.id.alarmToggle)).setChecked(true);
     }
     public void disarmAlarm() {
         MonitoringSleep= false;
-        //alarmMgr.cancel(alarmIntent);
-        alarmIntent.cancel();
+        AlarmSetByUser = false;
+        setTimeEnabled(true);
+        alarmMgr.cancel(alarmIntent);
+        //alarmIntent.cancel();
+        ((Switch)findViewById(R.id.alarmToggle)).setChecked(false);
+        Toast.makeText(this, "Alarm Canceled", Toast.LENGTH_LONG).show();
 
+    }
+
+    public void setTimeEnabled(boolean enabled) {
+        if (enabled) {
+            ((TextView) findViewById(R.id.hours)).setTextColor(Color.WHITE);
+            ((TextView) findViewById(R.id.minutes)).setTextColor(Color.WHITE);
+            ((FloatingActionButton) findViewById(R.id.fab)).setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+        } else {
+            ((TextView) findViewById(R.id.hours)).setTextColor(Color.GRAY);
+            ((TextView) findViewById(R.id.minutes)).setTextColor(Color.GRAY);
+            ((FloatingActionButton) findViewById(R.id.fab)).setBackgroundTintList(ColorStateList.valueOf(Color.GRAY));;
+        }
     }
 
 

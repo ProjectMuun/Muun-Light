@@ -89,7 +89,7 @@ public class MonitorActivity extends Activity implements SensorEventListener{
 
         MainActivity.MonitoringSleep = true;
         System.out.println("Activity Started");
-        ((Button) findViewById(R.id.alarmOffBTN)).setOnClickListener(new View.OnClickListener() {
+        (findViewById(R.id.alarmOffBTN)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 MainActivity.MonitoringSleep = false;
@@ -121,6 +121,7 @@ public class MonitorActivity extends Activity implements SensorEventListener{
 
     private void ring() {
         if (!playingRing) {
+            MainActivity.setBrightness(255, this.getApplicationContext());
             playingRing = true;
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);

@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -111,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
         updateAlarmTime(hours, minutes);
         AmPmTxT.setText(hours > 12 ? "PM" : "AM");
 
-        ((LinearLayout) findViewById(R.id.time)).setOnClickListener(new View.OnClickListener() {
+        (findViewById(R.id.time)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showTimePicker();
@@ -353,16 +355,36 @@ public class MainActivity extends AppCompatActivity {
 
     public void setTimeEnabled(boolean enabled) {
         if (enabled) {
-            ((TextView) findViewById(R.id.hours)).setTextColor(Color.WHITE);
-            ((TextView) findViewById(R.id.minutes)).setTextColor(Color.WHITE);
+            //((TextView) findViewById(R.id.hours)).setTextColor(Color.WHITE);
+            //((TextView) findViewById(R.id.minutes)).setTextColor(Color.WHITE);
+            setBrightness(255, this.getApplicationContext());
             ((FloatingActionButton) findViewById(R.id.fab)).setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
         } else {
-            ((TextView) findViewById(R.id.hours)).setTextColor(Color.GRAY);
-            ((TextView) findViewById(R.id.minutes)).setTextColor(Color.GRAY);
+            //((TextView) findViewById(R.id.hours)).setTextColor(Color.GRAY);
+            //((TextView) findViewById(R.id.minutes)).setTextColor(Color.GRAY);
+            setBrightness(170, this.getApplicationContext());
             ((FloatingActionButton) findViewById(R.id.fab)).setBackgroundTintList(ColorStateList.valueOf(Color.GRAY));
-            ;
+
         }
     }
+
+
+    public static void setBrightness(int brightness, Context context){
+
+        //constrain the value of brightness
+        if(brightness < 0)
+            brightness = 0;
+        else if(brightness > 255)
+            brightness = 255;
+
+
+        ContentResolver cResolver = context.getContentResolver();
+        Settings.System.putInt(cResolver, Settings.System.SCREEN_BRIGHTNESS, brightness);
+
+    }
+
+
+
 
 
 }

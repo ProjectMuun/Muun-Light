@@ -10,10 +10,10 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.Switch;
 
 /**
@@ -69,6 +69,10 @@ public class MonitorActivity extends Activity implements SensorEventListener{
                         System.out.println("REM!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                         ring();
                     }
+                } else {
+                    if (playingRing && (lastRecording-System.currentTimeMillis()) > 2000) {
+                        TurnOffAlarmAutomatically();
+                    }
                 }
             }
         }
@@ -117,6 +121,12 @@ public class MonitorActivity extends Activity implements SensorEventListener{
         sensorManager.unregisterListener(sel, TemperatureSensor);
         if (r != null)
             r.stop();
+    }
+
+    private void TurnOffAlarmAutomatically() {
+        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("TurnOffAlarmAutomatically", true)) {
+            r.stop();
+        }
     }
 
     private void ring() {

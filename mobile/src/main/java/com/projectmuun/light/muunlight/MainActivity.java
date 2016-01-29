@@ -25,6 +25,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -187,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
         dialog.setTitle("Settings");
 
         final SeekBar marginSeek = (SeekBar) dialog.findViewById(R.id.margin_seek);
-
+        final CheckBox alarmTurnOffCheckBox = (CheckBox) dialog.findViewById(R.id.AlarmTurnOffCheckBox);
 
         marginSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -220,22 +221,22 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        updateSettings(-2l, -1);
+                        updateSettings(-2l, -1, true);
                         break;
                     case 1:
-                        updateSettings(-2l, 7*24*60*60*1000l);
+                        updateSettings(-2l, 7*24*60*60*1000l, true);
                         break;
                     case 2:
-                        updateSettings(-2l, AlarmManager.INTERVAL_DAY);
+                        updateSettings(-2l, AlarmManager.INTERVAL_DAY, true);
                         break;
                     case 3:
-                        updateSettings(-2l, AlarmManager.INTERVAL_HALF_DAY);
+                        updateSettings(-2l, AlarmManager.INTERVAL_HALF_DAY, true);
                         break;
                     case 4:
-                        updateSettings(-2l, AlarmManager.INTERVAL_HOUR);
+                        updateSettings(-2l, AlarmManager.INTERVAL_HOUR, true);
                         break;
                     case 5:
-                        updateSettings(-2l, AlarmManager.INTERVAL_HALF_HOUR);
+                        updateSettings(-2l, AlarmManager.INTERVAL_HALF_HOUR, true);
                         break;
 
 
@@ -253,7 +254,8 @@ public class MainActivity extends AppCompatActivity {
             public void onDismiss(DialogInterface dialog) {
                 updateSettings(
                         marginSeek.getProgress()*60*1000,
-                        -2l
+                        -2l,
+                        alarmTurnOffCheckBox.isChecked()
                 );
             }
         });
@@ -261,12 +263,14 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    void updateSettings(long margin, long interval) {
+    void updateSettings(long margin, long interval, boolean turnOffAlarmAfterStandUp) {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
         if (margin != -2l)
             editor.putLong("Interval", interval);
         if (margin != -2l)
             editor.putLong("WakeMargin", margin);
+
+        editor.putBoolean("TurnOffAlarmAutomatically", turnOffAlarmAfterStandUp);
         editor.apply();
 
         Toast.makeText(this,"Settings Saved", Toast.LENGTH_SHORT).show();
@@ -357,12 +361,12 @@ public class MainActivity extends AppCompatActivity {
         if (enabled) {
             //((TextView) findViewById(R.id.hours)).setTextColor(Color.WHITE);
             //((TextView) findViewById(R.id.minutes)).setTextColor(Color.WHITE);
-            setBrightness(255, this.getApplicationContext());
+            //setBrightness(255, this.getApplicationContext());
             ((FloatingActionButton) findViewById(R.id.fab)).setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
         } else {
             //((TextView) findViewById(R.id.hours)).setTextColor(Color.GRAY);
             //((TextView) findViewById(R.id.minutes)).setTextColor(Color.GRAY);
-            setBrightness(170, this.getApplicationContext());
+            //setBrightness(100, this.getApplicationContext());
             ((FloatingActionButton) findViewById(R.id.fab)).setBackgroundTintList(ColorStateList.valueOf(Color.GRAY));
 
         }

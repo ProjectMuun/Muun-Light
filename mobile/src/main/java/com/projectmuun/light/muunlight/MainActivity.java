@@ -351,6 +351,7 @@ public class MainActivity extends AppCompatActivity {
         AlarmSetByUser = false;
         setTimeEnabled(true);
         alarmMgr.cancel(alarmIntent);
+        alarmMgr.cancel(kickIntent);
         //alarmIntent.cancel();
         ((Switch) findViewById(R.id.alarmToggle)).setChecked(false);
         Toast.makeText(this, "Alarm Canceled", Toast.LENGTH_LONG).show();

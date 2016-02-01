@@ -16,6 +16,7 @@ public class KickReciever extends WakefulBroadcastReceiver {
         //start activity
         Intent i = new Intent(context, MonitorActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        i.putExtra("monitor", true);
         System.out.println("kicked");
         context.startActivity(i);
 

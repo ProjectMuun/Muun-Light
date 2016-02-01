@@ -42,6 +42,7 @@ public class MonitorActivity extends Activity implements SensorEventListener{
     SensorManager sensorManager;
     AudioManager audioManager;
     Ringtone r;
+    Boolean monitorSleep = false;
 
     boolean playingRing = false;
 
@@ -91,28 +92,35 @@ public class MonitorActivity extends Activity implements SensorEventListener{
         setContentView(R.layout.alarm_went_off);
         //StaticWakeLock.lockOn(this);
 
-        MainActivity.MonitoringSleep = true;
-        System.out.println("Activity Started");
-        (findViewById(R.id.alarmOffBTN)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MainActivity.MonitoringSleep = false;
-                if (MainActivity.instance() != null) {
-                    MainActivity.instance().disarmAlarm();
+        monitorSleep = bundle.getBoolean("monitor", monitorSleep);
+
+        if (monitorSleep) {
+
+            MainActivity.MonitoringSleep = true;
+            System.out.println("Activity Started");
+            (findViewById(R.id.alarmOffBTN)).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    MainActivity.MonitoringSleep = false;
+                    if (MainActivity.instance() != null) {
+                        MainActivity.instance().disarmAlarm();
+                    }
+
+                    finish();
                 }
-                ((Switch) findViewById(R.id.alarmToggle)).setChecked(false);
-                finish();
+            });
+
+            //Sensor Stuff
+            sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+
+            if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
+                TemperatureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+                sensorManager.registerListener(sel, TemperatureSensor, SensorManager.SENSOR_DELAY_NORMAL);
             }
-        });
-
-        //Sensor Stuff
-        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-
-        if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
-            TemperatureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-            sensorManager.registerListener(sel, TemperatureSensor, SensorManager.SENSOR_DELAY_NORMAL);
+            //End sensor stuff
+        } else {
+            ring();
         }
-        //End sensor stuff
     }
 
     @Override

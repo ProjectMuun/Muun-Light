@@ -53,15 +53,17 @@ public class MainActivity extends AppCompatActivity {
     private TextView hoursTxT;
     private TextView minutesTxT;
     private TextView AmPmTxT;
+    public Switch alarmSwitch;
     private ImageButton settingsBtn;
     static MainActivity activity;
     static boolean AlarmSetByUser = false;
     static boolean TimePickerOn = false;
 
     static MainActivity instance() {
+        /*
         if (activity == null)
             activity = new MainActivity();
-
+        */
         return activity;
     }
 
@@ -121,7 +123,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        ((Switch) findViewById(R.id.alarmToggle)).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        alarmSwitch = ((Switch) findViewById(R.id.alarmToggle));
+        alarmSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
@@ -343,7 +346,7 @@ public class MainActivity extends AppCompatActivity {
 
         System.out.println("Alarm set\n" + hours + ":" + minutes + "\nAlarm in " + ((calendar.getTimeInMillis() - System.currentTimeMillis()) / 1000 / 60) + " minutes");
         Toast.makeText(MainActivity.this, "Alarm in " + ((calendar.getTimeInMillis() - System.currentTimeMillis()) / 1000 / 60 / 60) + " hours", Toast.LENGTH_SHORT).show();
-        ((Switch) findViewById(R.id.alarmToggle)).setChecked(true);
+        alarmSwitch.setChecked(true);
     }
 
     public void disarmAlarm() {
@@ -353,7 +356,7 @@ public class MainActivity extends AppCompatActivity {
         alarmMgr.cancel(alarmIntent);
         alarmMgr.cancel(kickIntent);
         //alarmIntent.cancel();
-        ((Switch) findViewById(R.id.alarmToggle)).setChecked(false);
+        alarmSwitch.setChecked(false);
         Toast.makeText(this, "Alarm Canceled", Toast.LENGTH_LONG).show();
 
     }

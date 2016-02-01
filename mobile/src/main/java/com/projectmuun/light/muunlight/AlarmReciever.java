@@ -31,7 +31,15 @@ public class AlarmReciever extends WakefulBroadcastReceiver{
     public void onReceive(Context context, Intent intent) {
         System.out.println("Alarm Started");
 
+        StaticWakeLock.lockOn(context);
+        //start activity
+        Intent i = new Intent(context, MonitorActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        i.putExtra("monitor", true);
+        System.out.println("kicked");
+        context.startActivity(i);
 
+        /*
         if (MainActivity.MonitoringSleep && MainActivity.AlarmSetByUser) {
             MainActivity.MonitoringSleep = false;
             audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
@@ -46,6 +54,7 @@ public class AlarmReciever extends WakefulBroadcastReceiver{
             });
             mp.start();
         }
+        */
     }
 
     private void restartAlarmSound() {

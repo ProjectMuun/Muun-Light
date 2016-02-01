@@ -103,7 +103,7 @@ public class MonitorActivity extends Activity implements SensorEventListener{
                 public void onClick(View v) {
                     MainActivity.MonitoringSleep = false;
                     if (MainActivity.instance() != null) {
-                        MainActivity.instance().disarmAlarm();
+                        MainActivity.instance().disarmAlarm(true);
                     }
 
                     finish();

@@ -346,7 +346,14 @@ public class MainActivity extends AppCompatActivity {
 
         System.out.println("Alarm set\n" + hours + ":" + minutes + "\nAlarm in " + ((calendar.getTimeInMillis() - System.currentTimeMillis()) / 1000 / 60) + " minutes");
         Toast.makeText(MainActivity.this, "Alarm in " + ((calendar.getTimeInMillis() - System.currentTimeMillis()) / 1000 / 60 / 60) + " hours", Toast.LENGTH_SHORT).show();
-        alarmSwitch.setChecked(true);
+
+    }
+    public void setAlarm(boolean checkSwitch) {
+        //setAlarm();
+        if (checkSwitch)
+            alarmSwitch.setChecked(true);
+        else
+            setAlarm();
     }
 
     public void disarmAlarm() {
@@ -356,9 +363,17 @@ public class MainActivity extends AppCompatActivity {
         alarmMgr.cancel(alarmIntent);
         alarmMgr.cancel(kickIntent);
         //alarmIntent.cancel();
-        alarmSwitch.setChecked(false);
+
         Toast.makeText(this, "Alarm Canceled", Toast.LENGTH_LONG).show();
 
+    }
+    public void disarmAlarm(boolean unCheck) {
+        //disarmAlarm();
+        //
+        if (unCheck)
+            alarmSwitch.setChecked(false);
+        else
+            setAlarm();
     }
 
     public void setTimeEnabled(boolean enabled) {

@@ -41,24 +41,31 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
+    //How early we will start monitoring
     public static final long EARLY_WAKE_MARGIN_DEFUALT = 15 * 60 * 1000L; //Milliseconds
     public static long EARLY_WAKE_MARGIN = EARLY_WAKE_MARGIN_DEFUALT;
 
+    //Alarm stuff
     private AlarmManager alarmMgr;
     private PendingIntent kickIntent;
     private PendingIntent alarmIntent;
+    //Wake up time
     public static int hours = 0;
     public static int minutes = 0;
-    public static boolean MonitoringSleep = false;
+    //Views
     private TextView hoursTxT;
     private TextView minutesTxT;
     private TextView AmPmTxT;
     public Switch alarmSwitch;
-    private ImageButton settingsBtn;
+    //private ImageButton settingsBtn;
+    //Singleton variable
     static MainActivity activity;
+    //Track keeping variables
     static boolean AlarmSetByUser = false;
     static boolean TimePickerOn = false;
+    public static boolean MonitoringSleep = false;
 
+    //Singleton function, return current instance
     static MainActivity instance() {
         /*
         if (activity == null)
@@ -73,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        //Toolbar at top of app
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle("Muun Light");
@@ -86,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //Floating action button (alarm set thing)
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,24 +106,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+        //Get services
         alarmMgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
 
+        //Initiate Views
         hoursTxT = (TextView) findViewById(R.id.hours);
         minutesTxT = (TextView) findViewById(R.id.minutes);
         AmPmTxT = (TextView) findViewById(R.id.ampm);
-        //settingsBtn = (ImageButton) findViewById(R.id.setting_btn);
 
-
+        //initiate time currently picked
         hours = PreferenceManager.getDefaultSharedPreferences(this).getInt("Hour", Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
         minutes = PreferenceManager.getDefaultSharedPreferences(this).getInt("Minute", Calendar.getInstance().get(Calendar.MINUTE));
-    /*
-        hoursTxT.setText(Integer.toString(hours>12?hours-12:hours));
-        minutesTxT.setText(minutes<10?"0"+minutes:Integer.toString(minutes));
-        */
+        //Update the time shown
         updateAlarmTime(hours, minutes);
         AmPmTxT.setText(hours > 12 ? "PM" : "AM");
 
+        //On click for the time shown (same as fab)
         (findViewById(R.id.time)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -123,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //Alarm Switch stuff
         alarmSwitch = ((Switch) findViewById(R.id.alarmToggle));
         alarmSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -134,32 +141,27 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        /*
-        settingsBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                settingsDialog();
-            }
-        });
-        */
 
+        //Initiate reference for singleton
         activity = this;
 
-
+        //If high enough version, set notification bar color
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
             Window window = activity.getWindow();
 
-// clear FLAG_TRANSLUCENT_STATUS flag:
+            // clear FLAG_TRANSLUCENT_STATUS flag:
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
-// add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+            // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
-// finally change the color
+            // finally change the color
 
             window.setStatusBarColor(activity.getResources().getColor(R.color.colorPrimaryDark));
         }
+
+        //End of onCreate
 
     }
 
@@ -185,6 +187,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    //Show Settings dialog
     private void settingsDialog() {
         final Dialog dialog = new Dialog(this, R.style.AppTheme);
         dialog.setContentView(R.layout.settings_dialog);
@@ -266,6 +269,7 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    //Save the settings
     void updateSettings(long margin, long interval, boolean turnOffAlarmAfterStandUp) {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
         if (margin != -2l)
@@ -279,6 +283,7 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this,"Settings Saved", Toast.LENGTH_SHORT).show();
     }
 
+    //Shows the time picker
     private void showTimePicker() {
         if (!AlarmSetByUser && !TimePickerOn) {
             TimePickerOn = true;
@@ -293,6 +298,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Saves and displays alarm time
     private void updateAlarmTime(int hour, int minute) {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
         editor.putInt("Hour", hour);
@@ -307,7 +313,7 @@ public class MainActivity extends AppCompatActivity {
         AmPmTxT.setText(hours > 12 ? "PM" : "AM");
     }
 
-
+    //Sets the alarm
     public void setAlarm() {
 
         AlarmSetByUser = true;

@@ -92,7 +92,7 @@ public class MonitorActivity extends Activity implements SensorEventListener{
         setContentView(R.layout.alarm_went_off);
         //StaticWakeLock.lockOn(this);
 
-        monitorSleep = bundle.getBoolean("monitor", monitorSleep);
+        monitorSleep = getIntent().getExtras().getBoolean("monitor", monitorSleep);
 
         if (monitorSleep) {
 

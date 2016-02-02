@@ -94,9 +94,9 @@ public class MonitorActivity extends Activity implements SensorEventListener{
 
         monitorSleep = getIntent().getExtras().getBoolean("monitor", monitorSleep);
 
-        if (monitorSleep) {
 
-            MainActivity.MonitoringSleep = true;
+
+
             System.out.println("Activity Started");
             (findViewById(R.id.alarmOffBTN)).setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -110,6 +110,8 @@ public class MonitorActivity extends Activity implements SensorEventListener{
                 }
             });
 
+            if (monitorSleep) {
+            MainActivity.MonitoringSleep = true;
             //Sensor Stuff
             sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
@@ -126,7 +128,8 @@ public class MonitorActivity extends Activity implements SensorEventListener{
     @Override
     public void onDestroy() {
         super.onDestroy();
-        sensorManager.unregisterListener(sel, TemperatureSensor);
+        if (monitorSleep)
+            sensorManager.unregisterListener(sel, TemperatureSensor);
         if (r != null)
             r.stop();
     }

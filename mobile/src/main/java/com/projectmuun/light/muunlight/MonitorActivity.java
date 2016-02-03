@@ -132,7 +132,9 @@ public class MonitorActivity extends Activity implements SensorEventListener{
             sensorManager.unregisterListener(sel, TemperatureSensor);
         if (r != null)
             r.stop();
+        StaticWakeLock.lockOff(this);
     }
+
 
     private void TurnOffAlarmAutomatically() {
         if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("TurnOffAlarmAutomatically", true)) {
@@ -157,7 +159,8 @@ public class MonitorActivity extends Activity implements SensorEventListener{
     @Override
     public void onStop() {
         super.onStop();
-        StaticWakeLock.lockOff(this);
+        //The back up alarm turned on, we wanna end this one
+        finish();
     }
 
     @Override

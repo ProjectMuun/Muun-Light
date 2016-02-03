@@ -64,6 +64,16 @@
             android:layout_alignParentBottom="true"
             android:id="@+id/space"/>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/time"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/alarmLabel"
+            android:text="Alarm at"
+            android:textColor="#FFFFFF"
+            android:textSize="20dp"/>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

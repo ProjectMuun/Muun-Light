@@ -40,7 +40,7 @@ public class AlarmReciever extends WakefulBroadcastReceiver{
             Intent i = new Intent(context, MonitorActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             i.putExtra("monitor", false);
-            System.out.println("kicked");
+            System.out.println("backup alarm launch request");
             context.startActivity(i);
             /*
             MainActivity.MonitoringSleep = false;

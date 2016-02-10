@@ -1,6 +1,7 @@
 package com.projectmuun.light.muunlight;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -14,14 +15,15 @@ import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.Switch;
 
 /**
  * Created by Micheal on 1/3/2016.
  */
-public class MonitorActivity extends Activity implements SensorEventListener{
+public class MonitorActivity extends Activity {
 
-    static final float NOISE = 0.5f;
+    static final float NOISE = 0.4f;
     static final long TIME_INTERVAL = 500l;
 
     //Ranges (exclusive)
@@ -41,6 +43,7 @@ public class MonitorActivity extends Activity implements SensorEventListener{
     public long lastRecording = 0l;
     SensorManager sensorManager;
     AudioManager audioManager;
+    Button btn;
     Ringtone r;
     Boolean monitorSleep = false;
 
@@ -60,7 +63,7 @@ public class MonitorActivity extends Activity implements SensorEventListener{
                 lastY = event.values[1];
                 lastZ = event.values[2];
 
-                System.out.println("Accelerometer (less)");
+                //System.out.println("Accelerometer (less)");
 
                 long timeDelta = System.currentTimeMillis() - lastRecording;
                 if ((deltaX > NOISE || deltaY > NOISE || deltaZ > NOISE) && (timeDelta) > TIME_INTERVAL) {
@@ -71,8 +74,8 @@ public class MonitorActivity extends Activity implements SensorEventListener{
                         ring();
                     }
                 } else {
-                    if (playingRing && (lastRecording-System.currentTimeMillis()) > 2000) {
-                        TurnOffAlarmAutomatically();
+                    if (playingRing && timeDelta > 2000) {
+                        //TurnOffAlarmAutomatically();
                     }
                 }
             }
@@ -98,15 +101,11 @@ public class MonitorActivity extends Activity implements SensorEventListener{
 
 
             System.out.println("Activity Started");
-            (findViewById(R.id.alarmOffBTN)).setOnClickListener(new View.OnClickListener() {
+            btn = (Button) findViewById(R.id.alarmOffBTN);
+            btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    MainActivity.MonitoringSleep = false;
-                    if (MainActivity.instance() != null) {
-                        MainActivity.instance().disarmAlarm(true);
-                    }
-
-                    finish();
+                    turnOffAlarm();
                 }
             });
 
@@ -120,9 +119,21 @@ public class MonitorActivity extends Activity implements SensorEventListener{
                 sensorManager.registerListener(sel, TemperatureSensor, SensorManager.SENSOR_DELAY_NORMAL);
             }
             //End sensor stuff
+            System.out.println("Monitor alarm launched");
         } else {
+            System.out.println("Backup alarm launched");
+            btn.setTextColor(Color.RED);
             ring();
         }
+    }
+
+    private void turnOffAlarm() {
+        MainActivity.MonitoringSleep = false;
+        if (MainActivity.instance() != null) {
+            MainActivity.instance().disarmAlarm(true);
+        }
+
+        finish();
     }
 
     @Override
@@ -133,12 +144,13 @@ public class MonitorActivity extends Activity implements SensorEventListener{
         if (r != null)
             r.stop();
         StaticWakeLock.lockOff(this);
+        System.out.println("Activity Destroyed.\nIs Backup Alarm:"+!monitorSleep);
     }
 
 
     private void TurnOffAlarmAutomatically() {
         if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("TurnOffAlarmAutomatically", true)) {
-            r.stop();
+            turnOffAlarm();
         }
     }
 
@@ -153,6 +165,7 @@ public class MonitorActivity extends Activity implements SensorEventListener{
             Uri ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
             r = RingtoneManager.getRingtone(this, ringtoneUri);
             r.play();
+            System.out.println("What did the alarm say?\nRing-inginginginging");
         }
     }
 
@@ -160,43 +173,15 @@ public class MonitorActivity extends Activity implements SensorEventListener{
     public void onStop() {
         super.onStop();
         //The back up alarm turned on, we wanna end this one
-        finish();
+        System.out.println("Stopped Monitor Activity \nIs Backup alarm: "+!monitorSleep);
+        turnOffAlarm();
     }
 
     @Override
-    public void onSensorChanged(SensorEvent event) {
-        /*
-        System.out.println("Sensor Event");
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            deltaX = Math.abs(event.values[0] - lastX);
-            deltaY = Math.abs(event.values[1] - lastY);
-            deltaZ = Math.abs(event.values[2] - lastZ);
-
-            lastX = event.values[0];
-            lastY = event.values[1];
-            lastZ = event.values[2];
-
-            System.out.println("Accelerometer (less)");
-
-            long timeDelta = System.currentTimeMillis() - lastRecording;
-            if ((deltaX > NOISE || deltaY > NOISE || deltaZ > NOISE) && (timeDelta) > TIME_INTERVAL) {
-                System.out.println("Accelerometer (more)");
-                if (timeDelta < REM_MAX) {
-                    System.out.println("REM!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                    audioManager.setStreamVolume(AudioManager.STREAM_RING, audioManager.getStreamMaxVolume(AudioManager.STREAM_RING), 0);
-                    Uri ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-                    Ringtone r = RingtoneManager.getRingtone(this, ringtoneUri);
-                    r.play();
-                }
-            }
-        } else {
-            finish();
-        }
-        */
+    public void onPause() {
+        super.onPause();
+        System.out.println("Paused Monitor Activity \nIs Backup alarm: " + !monitorSleep);
     }
 
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
-    }
 }

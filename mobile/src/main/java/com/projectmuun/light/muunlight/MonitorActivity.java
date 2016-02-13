@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.Switch;
 
 /**
  * Created by Micheal on 1/3/2016.
@@ -24,7 +23,7 @@ import android.widget.Switch;
 public class MonitorActivity extends Activity {
 
     static final float NOISE = 0.4f;
-    static final long TIME_INTERVAL = 500l;
+    static final long TIME_INTERVAL = 400l;
 
     //Ranges (exclusive)
     static final int REM_MAX = 5 * 1000;
@@ -76,6 +75,7 @@ public class MonitorActivity extends Activity {
                 } else {
                     if (playingRing && timeDelta > 2000) {
                         //TurnOffAlarmAutomatically();
+                        System.out.println("Turning off automatically");
                     }
                 }
             }
@@ -86,7 +86,7 @@ public class MonitorActivity extends Activity {
 
         }
     };
-    Sensor TemperatureSensor;
+    Sensor Accelerometer;
 
 
     @Override
@@ -115,8 +115,8 @@ public class MonitorActivity extends Activity {
             sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
             if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
-                TemperatureSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-                sensorManager.registerListener(sel, TemperatureSensor, SensorManager.SENSOR_DELAY_NORMAL);
+                Accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+                sensorManager.registerListener(sel, Accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
             }
             //End sensor stuff
             System.out.println("Monitor alarm launched");
@@ -140,7 +140,7 @@ public class MonitorActivity extends Activity {
     public void onDestroy() {
         super.onDestroy();
         if (monitorSleep)
-            sensorManager.unregisterListener(sel, TemperatureSensor);
+            sensorManager.unregisterListener(sel, Accelerometer);
         if (r != null)
             r.stop();
         StaticWakeLock.lockOff(this);
@@ -174,7 +174,7 @@ public class MonitorActivity extends Activity {
         super.onStop();
         //The back up alarm turned on, we wanna end this one
         System.out.println("Stopped Monitor Activity \nIs Backup alarm: "+!monitorSleep);
-        turnOffAlarm();
+        //turnOffAlarm();
     }
 
     @Override

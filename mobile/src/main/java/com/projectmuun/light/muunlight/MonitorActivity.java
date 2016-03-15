@@ -234,6 +234,15 @@ public class MonitorActivity extends Activity {
                 e.printStackTrace();
             }
 
+        } else {
+            try {
+                log.write(returnDate() + ":Request denied, alarm already in operation.");
+                log.newLine();
+                log.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 
@@ -241,7 +250,7 @@ public class MonitorActivity extends Activity {
     public void onStop() {
         super.onStop();
         //The back up alarm turned on, we wanna end this one
-        System.out.println("Stopped Monitor Activity \nIs Backup alarm: "+!monitorSleep);
+        System.out.println("Stopped Monitor Activity \nIs Backup alarm: " + !monitorSleep);
         try {
             log.write(returnDate() + ":Stopped Monitor Activity Is Backup alarm: "+!monitorSleep);
             log.newLine();

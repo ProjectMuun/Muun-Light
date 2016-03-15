@@ -42,20 +42,7 @@ public class AlarmReciever extends WakefulBroadcastReceiver{
             i.putExtra("monitor", false);
             System.out.println("backup alarm launch request");
             context.startActivity(i);
-            /*
-            MainActivity.MonitoringSleep = false;
-            audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
 
-            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
-            mp = MediaPlayer.create(context, R.raw.wakiewakie);
-            mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    restartAlarmSound();
-                }
-            });
-            mp.start();
-            */
         }
         //*/
     }

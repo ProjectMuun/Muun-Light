@@ -20,6 +20,7 @@ import android.widget.Button;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Calendar;
@@ -30,7 +31,7 @@ import java.util.Calendar;
 public class MonitorActivity extends Activity {
 
     static final float NOISE = 0.5f;
-    static final long TIME_INTERVAL = 600l;
+    static final long TIME_INTERVAL = 400l;
 
     //Ranges (exclusive)
     static final int REM_MAX = 5 * 1000;
@@ -55,7 +56,8 @@ public class MonitorActivity extends Activity {
 
     boolean playingRing = false;
 
-    BufferedWriter log;
+    FileOutputStream log;
+
 
     SensorEventListener sel = new SensorEventListener() {
         @Override
@@ -79,13 +81,7 @@ public class MonitorActivity extends Activity {
                     lastRecording = System.currentTimeMillis();
                     if (timeDelta < REM_MAX && MainActivity.AlarmSetByUser) {
                         System.out.println("REM!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                        try {
-                            log.write(returnDate() + ":Detected REM, turning on alarm.");
-                            log.newLine();
-                            log.flush();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        log("Detected REM, turning on alarm.");
                         ring();
                     }
                 } else {
@@ -126,7 +122,8 @@ public class MonitorActivity extends Activity {
             });
 
         try {
-            if (isExternalStorageWritable()) {
+            //if (isExternalStorageWritable())
+            //{
                 //*
                 File dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Sleep");
 
@@ -137,11 +134,11 @@ public class MonitorActivity extends Activity {
 
                 File file = new File(dir.getAbsolutePath() + File.separator + "log_human_readable.txt");
 
-
-                log = new BufferedWriter(new FileWriter(file));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+                //FileWriter fw = new FileWriter(file);
+                log = new FileOutputStream(file);
+            //}
+        } catch (Exception e) {
+            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+e.getMessage());
         }
 
             if (monitorSleep) {
@@ -153,21 +150,9 @@ public class MonitorActivity extends Activity {
                 Accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
                 sensorManager.registerListener(sel, Accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
             }
-                try {
-                    log.write(returnDate() + ":Monitoring of sleep has been initiated.");
-                    log.newLine();
-                    log.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            log("Monitoring of sleep has been initiated.");
         } else {
-                try {
-                    log.write(returnDate() + ":Initiating back up alarm.");
-                    log.newLine();
-                    log.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                log("Initiating back up alarm.");
             System.out.println("Backup alarm launched");
 
             btn.setTextColor(Color.RED);
@@ -180,13 +165,7 @@ public class MonitorActivity extends Activity {
         if (MainActivity.instance() != null) {
             MainActivity.instance().disarmAlarm(true);
         }
-        try {
-            log.write(returnDate() + ":Turned off alarm.");
-            log.newLine();
-            log.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        log("Turned off alarm.");
         finish();
     }
 
@@ -198,13 +177,7 @@ public class MonitorActivity extends Activity {
         if (r != null)
             r.stop();
         StaticWakeLock.lockOff(this);
-        try {
-            log.write(returnDate() + ":Activity Destroyed. Is back up alarm?:" + !monitorSleep);
-            log.newLine();
-            log.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        log("Activity Destroyed. Is back up alarm?:" + !monitorSleep);
     }
 
 
@@ -226,23 +199,9 @@ public class MonitorActivity extends Activity {
             r = RingtoneManager.getRingtone(this, ringtoneUri);
             r.play();
             System.out.println("What did the alarm say?\nRing-inginginginging");
-            try {
-                log.write(returnDate() + ":What did the alarm say?\nRing-inginginginging");
-                log.newLine();
-                log.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
+            log("What did the alarm say?\nRing-inginginginging \t Is back Up?:"+!monitorSleep);
         } else {
-            try {
-                log.write(returnDate() + ":Request denied, alarm already in operation.");
-                log.newLine();
-                log.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
+            log("Request denied, alarm already in operation.");
         }
     }
 
@@ -251,13 +210,8 @@ public class MonitorActivity extends Activity {
         super.onStop();
         //The back up alarm turned on, we wanna end this one
         System.out.println("Stopped Monitor Activity \nIs Backup alarm: " + !monitorSleep);
-        try {
-            log.write(returnDate() + ":Stopped Monitor Activity Is Backup alarm: "+!monitorSleep);
-            log.newLine();
-            log.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        log("Stopped Monitor Activity Is Backup alarm: "+!monitorSleep);
         //turnOffAlarm();
     }
 
@@ -265,21 +219,23 @@ public class MonitorActivity extends Activity {
     public void onPause() {
         super.onPause();
         System.out.println("Paused Monitor Activity \nIs Backup alarm: " + !monitorSleep);
+        log("Paused Monitor Activity Is Backup alarm: "+!monitorSleep);
+    }
+
+    public void log(String message) {
         try {
-            log.write(returnDate() + ":Paused Monitor Activity Is Backup alarm: "+!monitorSleep);
-            log.newLine();
+            log.write((returnDate() + ": " + message + "\n").getBytes());
+            //log.newLine();
             log.flush();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-
-
     //Utility functions
 
     public static String returnDate () {
-        return Calendar.getInstance().get(Calendar.DAY_OF_MONTH)+"/"+Calendar.getInstance().get(Calendar.MONTH)+"/"+Calendar.getInstance().get(Calendar.YEAR)    +     "\t"+Calendar.getInstance().get(Calendar.HOUR_OF_DAY)+":"+Calendar.getInstance().get(Calendar.MINUTE)+Calendar.getInstance().get(Calendar.SECOND);
+        return Calendar.getInstance().get(Calendar.DAY_OF_MONTH)+"/"+Calendar.getInstance().get(Calendar.MONTH)+"/"+Calendar.getInstance().get(Calendar.YEAR)    +     "\t"+Calendar.getInstance().get(Calendar.HOUR_OF_DAY)+":"+Calendar.getInstance().get(Calendar.MINUTE)+":"+Calendar.getInstance().get(Calendar.SECOND);
     }
 
     public boolean isExternalStorageWritable() {

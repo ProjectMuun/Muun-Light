@@ -1,5 +1,7 @@
 package com.projectmuun.light.muunlight;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.PendingIntent;
@@ -9,6 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
@@ -16,6 +19,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -64,6 +68,33 @@ public class MainActivity extends AppCompatActivity {
     static boolean AlarmSetByUser = false;
     static boolean TimePickerOn = false;
     public static boolean MonitoringSleep = false;
+    // Storage Permissions
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
+    /**
+     * Checks if the app has permission to write to device storage
+     *
+     * If the app does not has permission then the user will be prompted to grant permissions
+     *
+     * @param activity
+     */
+    public static void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        }
+    }
 
     //Singleton function, return current instance
     static MainActivity instance() {
@@ -161,6 +192,7 @@ public class MainActivity extends AppCompatActivity {
             window.setStatusBarColor(activity.getResources().getColor(R.color.colorPrimaryDark));
         }
 
+        verifyStoragePermissions(this);
         //End of onCreate
 
     }
@@ -339,10 +371,11 @@ public class MainActivity extends AppCompatActivity {
         EARLY_WAKE_MARGIN = PreferenceManager.getDefaultSharedPreferences(this).getLong("WakeMargin", EARLY_WAKE_MARGIN_DEFUALT);
         if (interval == -1L) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            //In the case SDK version is higher, so that you can set the Exact time
             alarmMgr.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
             alarmMgr.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - EARLY_WAKE_MARGIN, kickIntent);
         } else {
-            //In the case SDK version is higher, so that you can set the Exact time
+            //in the case it isn't higher
             alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
             alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - EARLY_WAKE_MARGIN, kickIntent);
         }

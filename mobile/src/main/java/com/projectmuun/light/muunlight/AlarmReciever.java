@@ -47,15 +47,6 @@ public class AlarmReciever extends WakefulBroadcastReceiver{
         //*/
     }
 
-    private void restartAlarmSound() {
-        if (MainActivity.MonitoringSleep && PreferenceManager.getDefaultSharedPreferences(context).getBoolean("Restart", true)) {
-            mp.stop();
-            mp.start();
-        } else {
-            mp.stop();
-            mp.release();
-            mp=null;
-        }
-    }
+
 
 }

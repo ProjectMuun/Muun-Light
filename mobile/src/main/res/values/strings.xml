@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Muun Light</string>
+    <string name="action_settings">Settings</string>
+
+    <string-array name="interval_array">
+        <item>Just Today</item>
+        <item>Week</item>
+        <item>Day</item>
+        <item>Half Day</item>
+        <item>Hour</item>
+        <item>Half Hour</item>
+    </string-array>
+</resources>

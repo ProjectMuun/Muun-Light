@@ -24,6 +24,8 @@
             android:screenOrientation="portrait"/>
         <receiver android:name=".AlarmReciever" ></receiver>
         <receiver android:name=".KickReciever" ></receiver>
+        <receiver android:name=".FeedbackReceiverPositive" />
+        <receiver android:name=".FeedbackReceiverNeutral" />
         
     </application>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>

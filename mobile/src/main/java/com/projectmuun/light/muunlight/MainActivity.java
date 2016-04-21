@@ -4,6 +4,8 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
@@ -13,13 +15,17 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.provider.SyncStateContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -31,8 +37,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
+import android.widget.RemoteViews;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -68,6 +73,9 @@ public class MainActivity extends AppCompatActivity {
     static boolean AlarmSetByUser = false;
     static boolean TimePickerOn = false;
     public static boolean MonitoringSleep = false;
+    //Notifications
+    NotificationManager mNotificationManager;
+    public static int FEEDBACK_NOTIFICATION_ID = 3573;
     // Storage Permissions
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
@@ -139,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Get services
         alarmMgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
 
         //Initiate Views
         hoursTxT = (TextView) findViewById(R.id.hours);
@@ -191,6 +200,25 @@ public class MainActivity extends AppCompatActivity {
 
             window.setStatusBarColor(activity.getResources().getColor(R.color.colorPrimaryDark));
         }
+
+        //Create the intents to be launched by the notification buttons
+        Intent intent1 = new Intent(this, FeedbackReceiverPositive.class);
+        Intent intent2 = new Intent(this, FeedbackReceiverNeutral.class);
+        PendingIntent pIntent = PendingIntent.getBroadcast(this, 97426, intent1, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent nIntent = PendingIntent.getBroadcast(this, 93706, intent2, PendingIntent.FLAG_CANCEL_CURRENT);
+        //Build "heads up" notification
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
+                .setContentTitle("How did you sleep today?")
+                //.setContentText("")
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setAutoCancel(true)
+                .setPriority(Notification.PRIORITY_MAX)
+                .addAction(R.mipmap.smile, "Great!", pIntent)
+                .addAction(R.mipmap.neutral, "Meh.", nIntent);
+        //Make sure there is no vibration
+        if (Build.VERSION.SDK_INT >= 21) mBuilder.setVibrate(new long[0]);
+        //Show notification
+        mNotificationManager.notify(FEEDBACK_NOTIFICATION_ID, mBuilder.build());
 
         verifyStoragePermissions(this);
         //End of onCreate

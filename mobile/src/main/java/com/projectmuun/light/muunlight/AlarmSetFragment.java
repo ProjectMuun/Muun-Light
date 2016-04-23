@@ -37,6 +37,9 @@ import java.util.Random;
  */
 public class AlarmSetFragment extends Fragment {
 
+    //Parent View
+    private View myFragmentView;
+
     //How early we will start monitoring
     public static final long EARLY_WAKE_MARGIN_DEFUALT = 15 * 60 * 1000L; //Milliseconds
     public static long EARLY_WAKE_MARGIN = EARLY_WAKE_MARGIN_DEFUALT;
@@ -59,9 +62,7 @@ public class AlarmSetFragment extends Fragment {
     static boolean AlarmSetByUser = false;
     static boolean TimePickerOn = false;
     public static boolean MonitoringSleep = false;
-    //Notifications
-    NotificationManager mNotificationManager;
-    public static int FEEDBACK_NOTIFICATION_ID = 3573;
+
 
     //Singleton function, return current instance
     static AlarmSetFragment instance() {
@@ -80,16 +81,17 @@ public class AlarmSetFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        
-        
+
+        //Initialize Parent View
+        myFragmentView = inflater.inflate(R.layout.content_main, container, false);
         //Get services
         alarmMgr = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
-        mNotificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+
 
         //Initiate Views
-        hoursTxT = (TextView) getActivity().findViewById(R.id.hours);
-        minutesTxT = (TextView) getActivity().findViewById(R.id.minutes);
-        AmPmTxT = (TextView) getActivity().findViewById(R.id.ampm);
+        hoursTxT = (TextView) myFragmentView.findViewById(R.id.hours);
+        minutesTxT = (TextView) myFragmentView.findViewById(R.id.minutes);
+        AmPmTxT = (TextView) myFragmentView.findViewById(R.id.ampm);
 
         //initiate time currently picked
         hours = PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt("Hour", Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
@@ -99,7 +101,7 @@ public class AlarmSetFragment extends Fragment {
         AmPmTxT.setText(hours > 12 ? "PM" : "AM");
 
         //On click for the time shown (same as fab)
-        (getActivity().findViewById(R.id.time)).setOnClickListener(new View.OnClickListener() {
+        (myFragmentView.findViewById(R.id.time)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showTimePicker();
@@ -107,7 +109,7 @@ public class AlarmSetFragment extends Fragment {
         });
 
         //Alarm Switch stuff
-        alarmSwitch = ((Switch) getActivity().findViewById(R.id.alarmToggle));
+        alarmSwitch = ((Switch) myFragmentView.findViewById(R.id.alarmToggle));
         alarmSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -122,45 +124,8 @@ public class AlarmSetFragment extends Fragment {
         //Initiate reference for singleton
         fragment = this;
 
-        //If high enough version, set notification bar color
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-            Window window = getActivity().getWindow();
-
-            // clear FLAG_TRANSLUCENT_STATUS flag:
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-            // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-
-            // finally change the color
-
-            window.setStatusBarColor(getActivity().getResources().getColor(R.color.colorPrimaryDark));
-        }
-
-        //Create the intents to be launched by the notification buttons
-        Intent intent1 = new Intent(getActivity(), FeedbackReceiverPositive.class);
-        Intent intent2 = new Intent(getActivity(), FeedbackReceiverNeutral.class);
-        PendingIntent pIntent = PendingIntent.getBroadcast(getActivity(), 97426, intent1, PendingIntent.FLAG_CANCEL_CURRENT);
-        PendingIntent nIntent = PendingIntent.getBroadcast(getActivity(), 93706, intent2, PendingIntent.FLAG_CANCEL_CURRENT);
-        //Build "heads up" notification
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getActivity())
-                .setContentTitle("How did you sleep today?")
-                        //.setContentText("")
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setAutoCancel(true)
-                .setPriority(Notification.PRIORITY_MAX)
-                .addAction(R.mipmap.smile, "Great!", pIntent)
-                .addAction(R.mipmap.neutral, "Meh.", nIntent);
-        //Make sure there is no vibration
-        if (Build.VERSION.SDK_INT >= 21) mBuilder.setVibrate(new long[0]);
-        //Show notification
-        mNotificationManager.notify(FEEDBACK_NOTIFICATION_ID, mBuilder.build());
-        
-        
-        
-        // Inflate the layout for getActivity() fragment
-        return inflater.inflate(R.layout.settings_dialog, container, false);
+        return myFragmentView;
     }
 
 
@@ -272,12 +237,12 @@ public class AlarmSetFragment extends Fragment {
             //((TextView) findViewById(R.id.hours)).setTextColor(Color.WHITE);
             //((TextView) findViewById(R.id.minutes)).setTextColor(Color.WHITE);
             //setBrightness(255, getActivity().getApplicationContext());
-            ((FloatingActionButton) getActivity().findViewById(R.id.fab)).setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+            ((FloatingActionButton) myFragmentView.findViewById(R.id.fab)).setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
         } else {
             //((TextView) findViewById(R.id.hours)).setTextColor(Color.GRAY);
             //((TextView) findViewById(R.id.minutes)).setTextColor(Color.GRAY);
             //setBrightness(100, getActivity().getApplicationContext());
-            ((FloatingActionButton) getActivity().findViewById(R.id.fab)).setBackgroundTintList(ColorStateList.valueOf(Color.GRAY));
+            ((FloatingActionButton) myFragmentView.findViewById(R.id.fab)).setBackgroundTintList(ColorStateList.valueOf(Color.GRAY));
 
         }
     }

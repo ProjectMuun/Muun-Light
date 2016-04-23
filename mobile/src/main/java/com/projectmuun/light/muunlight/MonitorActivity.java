@@ -162,8 +162,8 @@ public class MonitorActivity extends Activity {
 
     private void turnOffAlarm() {
         MainActivity.MonitoringSleep = false;
-        if (MainActivity.instance() != null) {
-            MainActivity.instance().disarmAlarm(true);
+        if (AlarmSetFragment.instance() != null) {
+            AlarmSetFragment.instance().disarmAlarm(true);
         }
         log("Turned off alarm.");
         finish();

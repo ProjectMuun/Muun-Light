@@ -24,6 +24,9 @@ public class SettingsFragment extends Fragment{
     CheckBox alarmTurnOffCheckBox;
     Spinner spinner;
 
+    //Parent View
+    private View myFragmentView;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,12 +38,16 @@ public class SettingsFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        marginSeek = (SeekBar) getView().findViewById(R.id.margin_seek);
-        alarmTurnOffCheckBox = (CheckBox) getView().findViewById(R.id.AlarmTurnOffCheckBox);
+
+        //Initialize Parent View
+        myFragmentView = inflater.inflate(R.layout.settings_fragment, container, false);
+
+        marginSeek = (SeekBar) myFragmentView.findViewById(R.id.margin_seek);
+        alarmTurnOffCheckBox = (CheckBox) myFragmentView.findViewById(R.id.AlarmTurnOffCheckBox);
         marginSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                ((TextView) getView().findViewById(R.id.margin_seek_txt)).setText("" + progress);
+                ((TextView) myFragmentView.findViewById(R.id.margin_seek_txt)).setText("" + progress);
             }
 
             @Override
@@ -54,7 +61,7 @@ public class SettingsFragment extends Fragment{
             }
         });
 
-        spinner = (Spinner) getActivity().findViewById(R.id.interval_spinner);
+        spinner = (Spinner) myFragmentView.findViewById(R.id.interval_spinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity().getApplicationContext(), R.array.interval_array, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
@@ -96,8 +103,8 @@ public class SettingsFragment extends Fragment{
         });
 
 
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.settings_dialog, container, false);
+  
+        return myFragmentView;
     }
     //Save the settings
     void updateSettings(long margin, long interval, boolean turnOffAlarmAfterStandUp) {

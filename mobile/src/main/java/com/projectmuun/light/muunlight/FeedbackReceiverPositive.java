@@ -29,7 +29,7 @@ public class FeedbackReceiverPositive extends BroadcastReceiver {
                 .setPriority(Notification.PRIORITY_MAX)
                 ;
         //Post the new notification
-        notificationManager.notify(MainActivity.FEEDBACK_NOTIFICATION_ID,mBuilder.build());
+        notificationManager.notify(MainActivity.FEEDBACK_NOTIFICATION_ID+1,mBuilder.build());
 
     }
 }

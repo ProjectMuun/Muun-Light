@@ -67,6 +67,9 @@ public class MainActivity extends AppCompatActivity {
     NotificationManager mNotificationManager;
     public static int FEEDBACK_NOTIFICATION_ID = 3573;
 
+    //Context singleton
+    static public MainActivity instance;
+
     //Tab stuff
     //private Toolbar toolbar;
     private TabLayout tabLayout;
@@ -106,7 +109,14 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
+    //Singleton function, return current instance
+    static MainActivity instance() {
+        /*
+        if (activity == null)
+            activity = new MainActivity();
+        */
+        return instance();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -176,6 +186,9 @@ public class MainActivity extends AppCompatActivity {
         mNotificationManager.notify(FEEDBACK_NOTIFICATION_ID, mBuilder.build());
 
         verifyStoragePermissions(this);
+
+        instance = this;
+
         //End of onCreate
 
     }

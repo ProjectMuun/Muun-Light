@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
@@ -35,10 +36,11 @@ import java.util.Random;
 /**
  * Created by Micheal on 4/22/2016.
  */
-public class AlarmSetFragment extends Fragment {
+public class AlarmSetFragment extends Fragment implements View.OnClickListener {
 
     //Parent View
     private View myFragmentView;
+    //private View globalView;
 
     //How early we will start monitoring
     public static final long EARLY_WAKE_MARGIN_DEFUALT = 15 * 60 * 1000L; //Milliseconds
@@ -83,7 +85,8 @@ public class AlarmSetFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         //Initialize Parent View
-        myFragmentView = inflater.inflate(R.layout.content_main, container, false);
+        myFragmentView = inflater.inflate(R.layout.alarm_set_fragment, container, false);
+        //globalView = inflater.inflate(R.layout.activity_main, container, false);
         //Get services
         alarmMgr = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
 
@@ -100,13 +103,7 @@ public class AlarmSetFragment extends Fragment {
         updateAlarmTime(hours, minutes);
         AmPmTxT.setText(hours > 12 ? "PM" : "AM");
 
-        //On click for the time shown (same as fab)
-        (myFragmentView.findViewById(R.id.time)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showTimePicker();
-            }
-        });
+
 
         //Alarm Switch stuff
         alarmSwitch = ((Switch) myFragmentView.findViewById(R.id.alarmToggle));
@@ -128,9 +125,20 @@ public class AlarmSetFragment extends Fragment {
         return myFragmentView;
     }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        // interact with UI here, not in onCreateView
+        super.onActivityCreated(savedInstanceState);
+
+        //On click for the time shown (same as fab)
+        (myFragmentView.findViewById(R.id.time)).setOnClickListener(this);
+        //floating action button (fab) onclick
+        (myFragmentView.findViewById(R.id.fab)).setOnClickListener(this);
+    }
 
 
-    //Shows the time picker
+
+        //Shows the time picker
     private void showTimePicker() {
         if (!AlarmSetByUser && !TimePickerOn) {
             TimePickerOn = true;
@@ -141,6 +149,24 @@ public class AlarmSetFragment extends Fragment {
                     TimePickerOn = false;
                 }
             }, hours, minutes, false);
+            tp.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    System.out.println("tp dismissed");
+                }
+            });
+            tp.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface dialog) {
+                    System.out.println("tp shown");
+                }
+            });
+            tp.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    System.out.println("");
+                }
+            });
             tp.show();
         }
     }
@@ -262,4 +288,9 @@ public class AlarmSetFragment extends Fragment {
 
     }
 
+    @Override
+    public void onClick(View v) {
+        //System.out.println("showing timepicker? maybe not.");
+        showTimePicker();
+    }
 }

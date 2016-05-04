@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="false"
+
     tools:context="com.projectmuun.light.muunlight"
     android:background="#183050">
 
@@ -17,7 +17,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:src="@drawable/clouds"
-            android:layout_alignParentBottom="true"/>
+            android:layout_alignParentBottom="true"
+            android:scaleType = "fitEnd"
+            />
         </RelativeLayout>
         <RelativeLayout
             android:layout_width="match_parent"

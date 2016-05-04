@@ -52,7 +52,7 @@ public class MonitorActivity extends Activity {
     AudioManager audioManager;
     Button btn;
     Ringtone r;
-    Boolean monitorSleep = false;
+    boolean monitorSleep = false;
 
     boolean playingRing = false;
 

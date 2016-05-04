@@ -107,7 +107,7 @@ public class SettingsFragment extends Fragment{
         return myFragmentView;
     }
     //Save the settings
-    void updateSettings(long margin, long interval, boolean turnOffAlarmAfterStandUp) {
+    public void updateSettings(long margin, long interval, boolean turnOffAlarmAfterStandUp) {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext()).edit();
         if (margin != -2l)
             editor.putLong("Interval", interval);

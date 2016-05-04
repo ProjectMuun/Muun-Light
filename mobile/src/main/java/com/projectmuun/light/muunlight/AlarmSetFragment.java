@@ -153,6 +153,7 @@ public class AlarmSetFragment extends Fragment implements View.OnClickListener {
                 @Override
                 public void onDismiss(DialogInterface dialog) {
                     System.out.println("tp dismissed");
+                    TimePickerOn = false;
                 }
             });
             tp.setOnShowListener(new DialogInterface.OnShowListener() {

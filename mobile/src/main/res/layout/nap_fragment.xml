@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/nap_toggle_btn"
+        android:text="NAP"
+        android:textColor="#ffffff" />
+    <ToggleButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:id="@+id/nap_toggle_btn"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/note"
+        android:text="This functionality wakes you up the next REM sleep phase, allowing you to only sleep one sleep cycle. \n\n 5 minutes after you press the button, the app will start monitoring for REM sleep."
+        android:textColor="#ffffff" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="\nNOTE: Nap function eats battery. Feed it power."
+        android:id="@+id/note"
+        android:textStyle="bold"
+        android:textColor="#ffffff" />
+
+</RelativeLayout>

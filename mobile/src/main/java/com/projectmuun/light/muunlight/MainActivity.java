@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private int[] tabIcons = {
+            R.drawable.ic_nap,
             R.drawable.ic_alarm_clock,
             R.drawable.ic_setting_dark
     };
@@ -196,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
     private void setupTabIcons() {
         tabLayout.getTabAt(0).setIcon(tabIcons[0]);
         tabLayout.getTabAt(1).setIcon(tabIcons[1]);
-        //tabLayout.getTabAt(2).setIcon(tabIcons[2]);
+        tabLayout.getTabAt(2).setIcon(tabIcons[2]);
     }
 
 
@@ -226,9 +227,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new NapFragment(), "NAP");
         adapter.addFragment(new AlarmSetFragment(), "ALARM");
         adapter.addFragment(new SettingsFragment(), "SETTINGS");
         viewPager.setAdapter(adapter);
+        viewPager.setCurrentItem(1);
     }
 
 

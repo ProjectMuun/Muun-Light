@@ -71,9 +71,11 @@
         <Spinner
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:spinnerMode="dropdown"
+            android:spinnerMode="dialog"
+
             android:id="@+id/interval_spinner"
-            android:layout_below="@+id/interval_txt">
+            android:layout_below="@+id/interval_txt"
+            android:layout_alignParentEnd="true">
 
         </Spinner>
     </RelativeLayout>

@@ -212,12 +212,16 @@ public class AlarmSetFragment extends Fragment implements View.OnClickListener {
         long interval = PreferenceManager.getDefaultSharedPreferences(getActivity()).getLong("Interval", -1L);
         EARLY_WAKE_MARGIN = PreferenceManager.getDefaultSharedPreferences(getActivity()).getLong("WakeMargin", EARLY_WAKE_MARGIN_DEFUALT);
         if (interval == -1L) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                //In the case SDK version is higher, so that you can set the Exact time
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT  < Build.VERSION_CODES.M) {
+                //In the case SDK version is between KITKAT and M, so that you can set the Exact time
                 alarmMgr.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
                 alarmMgr.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - EARLY_WAKE_MARGIN, kickIntent);
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                //In the case SDK version is higher or equal to M
+                alarmMgr.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
+                alarmMgr.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - EARLY_WAKE_MARGIN, kickIntent);
             } else {
-                //in the case it isn't higher
+                //in the case SDK is lower than KITKAT
                 alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
                 alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - EARLY_WAKE_MARGIN, kickIntent);
             }

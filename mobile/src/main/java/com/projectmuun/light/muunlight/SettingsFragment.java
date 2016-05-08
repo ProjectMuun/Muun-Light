@@ -24,7 +24,7 @@ public class SettingsFragment extends Fragment{
 
     public static final String WAKE_MARGIN_ID = "wake_margin";
     public static final long WAKE_MARGIN_DEFAULT = 15L  * 60 * 1000;
-    public static final int WAKE_MARGIN_SEEKBAR_POSTION_DEFUALT = 15;
+    public static final int WAKE_MARGIN_SEEKBAR_POSITION_DEFUALT = 15;
     public static final String INTERVAL_ID = "interval";
     public static final long INTERVAL_DEFAULT = -1L;
     public static final String INTERVAL_SPINNER_POSITION_ID = "interval_spinner_position";
@@ -140,7 +140,7 @@ public class SettingsFragment extends Fragment{
             }
         });
 
-//        loadSettings();
+        loadSettings();
 
 
   
@@ -161,8 +161,8 @@ public class SettingsFragment extends Fragment{
         Toast.makeText(getActivity().getApplicationContext(), "Settings Saved", Toast.LENGTH_SHORT).show();
     }
     public void restoreSettings() {
-        marginSeek.setProgress(WAKE_MARGIN_SEEKBAR_POSTION_DEFUALT);
-        wake_margin = WAKE_MARGIN_SEEKBAR_POSTION_DEFUALT;
+        marginSeek.setProgress(WAKE_MARGIN_SEEKBAR_POSITION_DEFUALT);
+        wake_margin = WAKE_MARGIN_SEEKBAR_POSITION_DEFUALT;
 
         spinner.setSelection(INTERVAL_SPINNER_POSITION_DEFAULT,true);
         spinner_position = INTERVAL_SPINNER_POSITION_DEFAULT;
@@ -177,7 +177,7 @@ public class SettingsFragment extends Fragment{
     public void loadSettings(){
         SharedPreferences s = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
-        marginSeek.setProgress(s.getInt(WAKE_MARGIN_ID, 15));
+        marginSeek.setProgress((int) (s.getLong(WAKE_MARGIN_ID, WAKE_MARGIN_DEFAULT))/1000/60);
         spinner.setSelection(s.getInt(INTERVAL_SPINNER_POSITION_ID, INTERVAL_SPINNER_POSITION_DEFAULT), true);
         alarmTurnOffCheckBox.setChecked(s.getBoolean(ALARM_TURN_OFF_AUTOMATICALLY_ID,ALARM_TURN_OFF_AUTOMATICALLY_DEFAULT));
 

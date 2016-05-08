@@ -34,7 +34,7 @@ import java.util.Calendar;
 import java.util.Random;
 
 /**
- * Created by Micheal on 4/22/2016.
+ * Created by Micheal Roslikov.
  */
 public class AlarmSetFragment extends Fragment implements View.OnClickListener {
 
@@ -140,7 +140,7 @@ public class AlarmSetFragment extends Fragment implements View.OnClickListener {
 
         //Shows the time picker
     private void showTimePicker() {
-        if (!AlarmSetByUser && !TimePickerOn) {
+        if (/*!AlarmSetByUser &&*/ !TimePickerOn) {
             TimePickerOn = true;
             TimePickerDialog tp = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
                 @Override
@@ -185,6 +185,12 @@ public class AlarmSetFragment extends Fragment implements View.OnClickListener {
         hoursTxT.setText(Integer.toString(hours > 12 ? hours - 12 : hours));
         minutesTxT.setText(minutes < 10 ? "0" + minutes : Integer.toString(minutes));
         AmPmTxT.setText(hours > 12 ? "PM" : "AM");
+
+        //Also, if the alarm is already on, it turns off and gets turned back on again
+        if (AlarmSetByUser) {
+            disarmAlarm();
+            setAlarm();
+        }
     }
 
     //Sets the alarm
@@ -193,15 +199,19 @@ public class AlarmSetFragment extends Fragment implements View.OnClickListener {
         AlarmSetByUser = true;
         setTimeEnabled(false);
 
+        //make the intents for the kick that launches REM detection and back up alarm
         Intent intent = new Intent(getActivity(), AlarmReciever.class);
         Intent intent1 = new Intent(getActivity(), KickReciever.class);
         alarmIntent = PendingIntent.getBroadcast(getActivity(), new Random().nextInt(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
         kickIntent = PendingIntent.getBroadcast(getActivity(), new Random().nextInt(), intent1, PendingIntent.FLAG_CANCEL_CURRENT);
+        //using calendar class to find the given time in a special millisecond format
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, hours);
         calendar.set(Calendar.MINUTE, minutes);
+        //Make the day for the alarm the next day if that time has passed
         if (calendar.getTimeInMillis() < System.currentTimeMillis()) {
+            //If end of year, make sure it doesn't become day 366
             if (calendar.get(Calendar.DAY_OF_YEAR) > 364) {
                 calendar.set(Calendar.DAY_OF_YEAR, 1);
                 calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR) + 1);
@@ -209,89 +219,71 @@ public class AlarmSetFragment extends Fragment implements View.OnClickListener {
                 calendar.set(Calendar.DAY_OF_YEAR, calendar.get(Calendar.DAY_OF_YEAR) + 1);
             }
         }
+        //retrieve the settings used to set alarms that the user has set
         long interval = PreferenceManager.getDefaultSharedPreferences(getActivity()).getLong("Interval", -1L);
         EARLY_WAKE_MARGIN = PreferenceManager.getDefaultSharedPreferences(getActivity()).getLong("WakeMargin", EARLY_WAKE_MARGIN_DEFUALT);
+        //Checks if alarm interval has been set
         if (interval == -1L) {
+            //If it has not, then go along with the whole alarm setting business
+            //Btw, it is really weird how the functions needed to achieve the same thing has been inconsistent among versions
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT  < Build.VERSION_CODES.M) {
                 //In the case SDK version is between KITKAT and M, so that you can set the Exact time
                 alarmMgr.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
                 alarmMgr.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - EARLY_WAKE_MARGIN, kickIntent);
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                //In the case SDK version is higher or equal to M
+                //In the case SDK version is higher or equal to M, so you can set exact time and allow wake up in power save mode
                 alarmMgr.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
                 alarmMgr.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - EARLY_WAKE_MARGIN, kickIntent);
             } else {
-                //in the case SDK is lower than KITKAT
+                //in the case SDK is lower than KITKAT, so it wakes the phone at exact time no matter what
                 alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), alarmIntent);
                 alarmMgr.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - EARLY_WAKE_MARGIN, kickIntent);
             }
         } else {
-            //In the case of the User specified the Interval
+            //In the case of the User specified the Interval, I should probably remove this feature as problems
+            // will occur with newer versions
             alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis()-EARLY_WAKE_MARGIN, interval, kickIntent);
             alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), interval, alarmIntent);
         }
 
+        //Nice little confirmation to the user
         System.out.println("Alarm set\n" + hours + ":" + minutes + "\nAlarm in " + ((calendar.getTimeInMillis() - System.currentTimeMillis()) / 1000 / 60) + " minutes");
         Toast.makeText(getActivity(), "Alarm in " + ((calendar.getTimeInMillis() - System.currentTimeMillis()) / 1000 / 60 / 60) + " hours", Toast.LENGTH_SHORT).show();
 
     }
-    public void setAlarm(boolean checkSwitch) {
-        //setAlarm();
-        if (checkSwitch)
-            alarmSwitch.setChecked(true);
-        else
-            setAlarm();
-    }
 
+    //Disarm the alarm
     public void disarmAlarm() {
         MonitoringSleep = false;
         AlarmSetByUser = false;
         setTimeEnabled(true);
         alarmMgr.cancel(alarmIntent);
         alarmMgr.cancel(kickIntent);
-        //alarmIntent.cancel();
 
         Toast.makeText(getActivity(), "Alarm Canceled", Toast.LENGTH_LONG).show();
 
     }
-    public void disarmAlarm(boolean unCheck) {
-        //disarmAlarm();
-        //
-        if (unCheck)
+    //This function is called in a different thread. It unchecks the switch and that calls the listener that calls the disarm alarm
+    public void disarmAlarmAndUncheck() {
             alarmSwitch.setChecked(false);
-        else
-            setAlarm();
     }
 
+    //this function is called to change the ui according if the alarm is currently on
     public void setTimeEnabled(boolean enabled) {
         if (enabled) {
             //((TextView) findViewById(R.id.hours)).setTextColor(Color.WHITE);
             //((TextView) findViewById(R.id.minutes)).setTextColor(Color.WHITE);
             //setBrightness(255, getActivity().getApplicationContext());
-            ((FloatingActionButton) myFragmentView.findViewById(R.id.fab)).setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
+            //((FloatingActionButton) myFragmentView.findViewById(R.id.fab)).setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorAccent)));
         } else {
             //((TextView) findViewById(R.id.hours)).setTextColor(Color.GRAY);
             //((TextView) findViewById(R.id.minutes)).setTextColor(Color.GRAY);
             //setBrightness(100, getActivity().getApplicationContext());
-            ((FloatingActionButton) myFragmentView.findViewById(R.id.fab)).setBackgroundTintList(ColorStateList.valueOf(Color.GRAY));
+            //((FloatingActionButton) myFragmentView.findViewById(R.id.fab)).setBackgroundTintList(ColorStateList.valueOf(Color.GRAY));
 
         }
     }
 
-
-    public static void setBrightness(int brightness, Context context){
-
-        //constrain the value of brightness
-        if(brightness < 0)
-            brightness = 0;
-        else if(brightness > 255)
-            brightness = 255;
-
-
-        ContentResolver cResolver = context.getContentResolver();
-        Settings.System.putInt(cResolver, Settings.System.SCREEN_BRIGHTNESS, brightness);
-
-    }
 
     @Override
     public void onClick(View v) {

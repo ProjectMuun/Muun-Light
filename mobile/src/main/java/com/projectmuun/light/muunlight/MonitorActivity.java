@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.Calendar;
 
 /**
- * Created by Micheal on 1/3/2016.
+ * Created by Micheal Roslikov.
  */
 public class MonitorActivity extends Activity {
 
@@ -163,7 +163,7 @@ public class MonitorActivity extends Activity {
     private void turnOffAlarm() {
         MainActivity.MonitoringSleep = false;
         if (AlarmSetFragment.instance() != null) {
-            AlarmSetFragment.instance().disarmAlarm(true);
+            AlarmSetFragment.instance().disarmAlarmAndUncheck();
         }
         log("Turned off alarm.");
         finish();

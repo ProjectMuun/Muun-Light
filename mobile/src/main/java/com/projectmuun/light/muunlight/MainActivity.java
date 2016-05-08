@@ -61,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
 
     //Track keeping variables
     static boolean AlarmSetByUser = false;
-    static boolean TimePickerOn = false;
     public static boolean MonitoringSleep = false;
     //Notifications
     NotificationManager mNotificationManager;

@@ -24,7 +24,7 @@ public class SettingsFragment extends Fragment{
 
     public static final String WAKE_MARGIN_ID = "wake_margin";
     public static final long WAKE_MARGIN_DEFAULT = 15L  * 60 * 1000;
-    public static final int WAKE_MARGIN_SEEKBAR_POSITION_DEFUALT = 15;
+    public static final int WAKE_MARGIN_SEEKBAR_POSITION_DEFUALT = 14;
     public static final String INTERVAL_ID = "interval";
     public static final long INTERVAL_DEFAULT = -1L;
     public static final String INTERVAL_SPINNER_POSITION_ID = "interval_spinner_position";
@@ -73,8 +73,8 @@ public class SettingsFragment extends Fragment{
         marginSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                ((TextView) myFragmentView.findViewById(R.id.margin_seek_txt)).setText("" + progress);
-                wake_margin = progress * 60 * 1000;
+                ((TextView) myFragmentView.findViewById(R.id.margin_seek_txt)).setText("" + (progress+1));
+                wake_margin = (progress+1) * 60 * 1000;
             }
 
             @Override

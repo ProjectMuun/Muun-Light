@@ -72,6 +72,7 @@ public class AlarmSetFragment extends Fragment implements View.OnClickListener {
         if (activity == null)
             activity = new MainActivity();
         */
+        MonitorActivity.log("AlarmSetFragment instance has been requested Is null:"+(fragment==null));
         return fragment;
     }
     
@@ -249,7 +250,7 @@ public class AlarmSetFragment extends Fragment implements View.OnClickListener {
         //Nice little confirmation to the user
         System.out.println("Alarm set\n" + hours + ":" + minutes + "\nAlarm in " + ((calendar.getTimeInMillis() - System.currentTimeMillis()) / 1000 / 60) + " minutes");
         Toast.makeText(getActivity(), "Alarm in " + ((calendar.getTimeInMillis() - System.currentTimeMillis()) / 1000 / 60 / 60) + " hours", Toast.LENGTH_SHORT).show();
-
+        MonitorActivity.log("Alarm Set for "+(hours>12?hours-12:hours)+":"+(minutes < 10 ? "0" + minutes : Integer.toString(minutes)));
     }
 
     //Disarm the alarm
@@ -261,7 +262,7 @@ public class AlarmSetFragment extends Fragment implements View.OnClickListener {
         alarmMgr.cancel(kickIntent);
 
         Toast.makeText(getActivity(), "Alarm Canceled", Toast.LENGTH_LONG).show();
-
+        MonitorActivity.log("Alarm Canceled");
     }
     //This function is called in a different thread. It unchecks the switch and that calls the listener that calls the disarm alarm
     public void disarmAlarmAndUncheck() {

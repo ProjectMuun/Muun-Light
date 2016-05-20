@@ -36,6 +36,7 @@ public class AlarmReciever extends WakefulBroadcastReceiver{
         //*
         if (MainActivity.MonitoringSleep && MainActivity.AlarmSetByUser) {
             StaticWakeLock.lockOn(context);
+            MonitorActivity.log("Backup Alarm broadcast receiver has been initiated, starting activity.");
             //start activity
             Intent i = new Intent(context, MonitorActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

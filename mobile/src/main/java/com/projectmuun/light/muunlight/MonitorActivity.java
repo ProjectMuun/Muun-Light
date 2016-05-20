@@ -56,7 +56,7 @@ public class MonitorActivity extends Activity {
 
     boolean playingRing = false;
 
-    FileOutputStream log;
+
 
 
     SensorEventListener sel = new SensorEventListener() {
@@ -78,6 +78,7 @@ public class MonitorActivity extends Activity {
                 long timeDelta = System.currentTimeMillis() - lastRecording;
                 if ((deltaX > NOISE || deltaY > NOISE || deltaZ > NOISE) && (timeDelta) > TIME_INTERVAL) {
                     System.out.println("Accelerometer (more)");
+                    log("Accelerometer (more)");
                     lastRecording = System.currentTimeMillis();
                     if (timeDelta < REM_MAX && MainActivity.AlarmSetByUser) {
                         System.out.println("REM!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -88,6 +89,7 @@ public class MonitorActivity extends Activity {
                     if (playingRing && timeDelta > 2000) {
                         //TurnOffAlarmAutomatically();
                         System.out.println("Turning off automatically");
+                        log("Would have turned off automatically");
                     }
                 }
             }
@@ -121,25 +123,7 @@ public class MonitorActivity extends Activity {
                 }
             });
 
-        try {
-            //if (isExternalStorageWritable())
-            //{
-                //*
-                File dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Sleep");
 
-                if (!dir.exists()) {
-                    dir.mkdir();
-                }
-                //*/
-
-                File file = new File(dir.getAbsolutePath() + File.separator + "log_human_readable.txt");
-
-                //FileWriter fw = new FileWriter(file);
-                log = new FileOutputStream(file);
-            //}
-        } catch (Exception e) {
-            System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+e.getMessage());
-        }
 
             if (monitorSleep) {
             MainActivity.MonitoringSleep = true;
@@ -222,14 +206,34 @@ public class MonitorActivity extends Activity {
         log("Paused Monitor Activity Is Backup alarm: "+!monitorSleep);
     }
 
-    public void log(String message) {
+    public static void log(String message) {
         try {
-            log.write((returnDate() + ": " + message + "\n").getBytes());
-            //log.newLine();
-            log.flush();
+
+                //if (isExternalStorageWritable()) {
+                    //*
+                    FileOutputStream log;
+                    File dir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Sleep");
+
+                    if (!dir.exists()) {
+                        dir.mkdir();
+                    }
+                    //*/
+
+                    File file = new File(dir.getAbsolutePath() + File.separator + "log_human_readable.txt");
+
+
+                    log = new FileOutputStream(file, true);
+
+                    log.write((returnDate() + ": " + message + "\n").getBytes());
+
+                    log.flush();
+                    log.close();
+//                }
+
         } catch (Exception e) {
-            e.printStackTrace();
-        }
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+e.getMessage());
+            }
+
     }
 
     //Utility functions
@@ -238,7 +242,7 @@ public class MonitorActivity extends Activity {
         return Calendar.getInstance().get(Calendar.DAY_OF_MONTH)+"/"+Calendar.getInstance().get(Calendar.MONTH)+"/"+Calendar.getInstance().get(Calendar.YEAR)    +     "\t"+Calendar.getInstance().get(Calendar.HOUR_OF_DAY)+":"+Calendar.getInstance().get(Calendar.MINUTE)+":"+Calendar.getInstance().get(Calendar.SECOND);
     }
 
-    public boolean isExternalStorageWritable() {
+    public static boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state)) {
             return true;

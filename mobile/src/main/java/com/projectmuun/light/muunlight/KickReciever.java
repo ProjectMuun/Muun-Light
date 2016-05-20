@@ -13,6 +13,7 @@ public class KickReciever extends WakefulBroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         StaticWakeLock.lockOn(context);
+        MonitorActivity.log("KickReceiver started, starting monitor activity.");
         //start activity
         Intent i = new Intent(context, MonitorActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

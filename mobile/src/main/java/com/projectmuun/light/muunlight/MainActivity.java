@@ -115,7 +115,8 @@ public class MainActivity extends AppCompatActivity {
         if (activity == null)
             activity = new MainActivity();
         */
-        return instance();
+        MonitorActivity.log("MainActivity instance requested Is null:" + (instance==null));
+        return instance;
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {

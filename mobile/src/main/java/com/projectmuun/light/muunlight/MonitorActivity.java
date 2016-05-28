@@ -119,6 +119,7 @@ public class MonitorActivity extends Activity {
             btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    log("alarm off button pushed");
                     turnOffAlarm();
                 }
             });
